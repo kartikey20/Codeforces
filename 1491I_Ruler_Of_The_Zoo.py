@@ -1,7 +1,7 @@
-import itertools
 import os
 import sys
 from io import BytesIO, IOBase
+import collections
 
 BUFSIZE = 8192
 
@@ -54,38 +54,31 @@ sys.stdin, sys.stdout = IOWrapper(sys.stdin), IOWrapper(sys.stdout)
 def input(): return sys.stdin.readline().rstrip('\r\n')
 
 
+dic = collections.OrderedDict()
 n = int(input())
-d = dict(map(int, input().split()) for _ in range(2 * n))
+
+for i in range(n):
+    dic[i] = list(map(int, input().split()))
 
 
-def isValid(nums):
-    while len(nums) > 0:
-        l = len(nums)
-        for i, v in enumerate(nums):
-            if i > 0:
-                if abs(v) == abs(nums[i - 1]):
-                    if v < 0:
-                        nums.pop(i)
-                        nums.pop(i - 1)
-        if len(nums) == l:
-            return False
-    return True
+def solve(animals):
+    initialOrder = list(animals.keys())
+    countWin = 0
+    index = 0
+    while countWin < 3:
+        iterator = iter(dic)
+        firstKey = next(iterator)
+        secondKey = next(iterator)
+        if animals[firstKey][countWin] < animals[secondKey]:
+            animals.move_to_end(firstKey, last=True)
+            countWin = 1
+        elif animals[firstKey][countWin] > animals[secondKey][0]:
+            animals.move_to_end(secondKey, last=True)
+            countWin += 1
+        index += 1
+        if initialOrder == list(animals.keys()):
+            return [-1, -1]
+    return [next(iter(animals)), index]
 
 
-def solve(dic):
-    for i in itertools.permutations(d.keys(), len(dic)):
-        front = list(i)
-        back = [dic[x] for x in i]
-        if isValid(front[:]) == True and isValid(back[:]) == True:
-            return ['YES', front, back]
-    return ['NO']
-
-
-ans = solve(d)
-if len(ans) > 1:
-    print(ans[0])
-    res = "\n".join("{} {}".format(x, y) for x, y in zip(ans[1], ans[2]))
-    print(res)
-
-else:
-    print(ans[0])
+print(*solve(dic))
