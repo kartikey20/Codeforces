@@ -1,7 +1,9 @@
+# TODO: Implement deque
 import itertools
 import os
 import sys
 from io import BytesIO, IOBase
+from typing import OrderedDict
 
 BUFSIZE = 8192
 
@@ -55,7 +57,9 @@ def input(): return sys.stdin.readline().rstrip('\r\n')
 
 
 n = int(input())
-d = dict(map(int, input().split()) for _ in range(2 * n))
+d = OrderedDict(map(int, input().split()) for _ in range(2 * n))
+
+print(d)
 
 
 def isValid(nums):

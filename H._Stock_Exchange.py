@@ -1,8 +1,6 @@
-# TODO: Implement deque
 import os
 import sys
 from io import BytesIO, IOBase
-import collections
 
 BUFSIZE = 8192
 
@@ -34,39 +32,33 @@ class IOWrapper(IOBase):
     def __init__(self, file):
         self.buffer = FastIO(file)
         self.flush = self.buffer.flush
+        self.writable = self.buffer.writable
         self.write = lambda s: self.buffer.write(s.encode('ascii'))
+        self.read = lambda: self.buffer.read().decode('ascii')
         self.readline = lambda: self.buffer.readline().decode('ascii')
 
 
 sys.stdin, sys.stdout = IOWrapper(sys.stdin), IOWrapper(sys.stdout)
 def input(): return sys.stdin.readline().rstrip('\r\n')
+def print(s): return sys.stdout.write(str(s))
 
 
-dic = collections.OrderedDict()
-n = int(input())
-
-for i in range(n):
-    dic[i] = list(map(int, input().split()))
-
-
-def solve(animals):
-    initialOrder = list(animals.keys())
-    countWin = 0
-    index = 0
-    while countWin < 3:
-        iterator = iter(dic)
-        firstKey = next(iterator)
-        secondKey = next(iterator)
-        if animals[firstKey][countWin] < animals[secondKey][0]:
-            animals.move_to_end(firstKey, last=True)
-            countWin = 1
-        elif animals[firstKey][countWin] > animals[secondKey][0]:
-            animals.move_to_end(secondKey, last=True)
-            countWin += 1
-        index += 1
-        if initialOrder == list(animals.keys()):
-            return [-1, -1]
-    return [next(iter(animals)), index]
-
-
-print(*solve(dic))
+n = 1  # int(input())
+have = [[3, 10]]
+toBuy = [[1, 16]]
+t = 0
+# for i in range(n):
+#     have.append(list(map(int, input().split())))
+# for i in range(n):
+#     toBuy.append(list(map(int, input().split())))
+for i, k in enumerate(have):
+    for j, m in enumerate(toBuy):
+        t = max(t, (m[1] - k[1]) / (k[0] - m[0]))
+        del have[i]
+        del toBuy[j]
+        if t <= 0:
+            print(-1)
+            break
+b = 0
+o = 0
+print(int(t))

@@ -54,5 +54,4 @@ def input(): return sys.stdin.readline().rstrip('\r\n')
 
 
 string = list(input())
-string[0] = string[0].upper()
-print("".join(string))
+print(string[:1].upper() + string[1:])
