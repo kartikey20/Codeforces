@@ -1,6 +1,7 @@
 import os
 import sys
 from io import BytesIO, IOBase
+from itertools import groupby
 
 BUFSIZE = 8192
 
@@ -38,3 +39,14 @@ class IOWrapper(IOBase):
 
 sys.stdin, sys.stdout = IOWrapper(sys.stdin), IOWrapper(sys.stdout)
 def input(): return sys.stdin.readline().rstrip('\r\n')
+
+
+_int = int
+n = _int(input())
+arr = []
+for i in range(n):
+    arr.append(_int(input()))
+d = {}
+for i, k in groupby(sorted(arr)):
+    d.update({i: list(k)})
+print(len(d.keys()))
