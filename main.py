@@ -6,21 +6,20 @@ BUFSIZE = 8192
 
 
 class FastIO(IOBase):
-    newlines = 0
+    newLines = 0
 
     def __init__(self, file):
         self._fd = file.fileno()
         self.buffer = BytesIO()
-        self.writable = 'x' in file.mode or 'r' not in file.mode
         self.write = self.buffer.write if self.writable else None
 
     def readline(self):
-        while self.newlines == 0:
+        while self.newLines == 0:
             b = os.read(self._fd, max(os.fstat(self._fd).st_size, BUFSIZE))
-            self.newlines = b.count(b'\n') + (not b)
+            self.newLines = b.count(b'\n') + (not b)
             ptr = self.buffer.tell()
-            self.buffer.seek(0, 2), self.buffer.write(b), self.buffer.seek(ptr)
-        self.newlines -= 1
+            self.buffer.seek(0, 2), self.buffer.write(b), self.buffer.read(ptr)
+        self.newLines -= 1
         return self.buffer.readline()
 
     def flush(self):

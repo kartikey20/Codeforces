@@ -1,3 +1,4 @@
+from collections import deque
 import os
 import sys
 from io import BytesIO, IOBase
@@ -6,20 +7,19 @@ BUFSIZE = 8192
 
 
 class FastIO(IOBase):
-    newlines = 0
+    newLines = 0
 
     def __init__(self, file):
         self._fd = file.fileno()
-        self.buffer = BytesIO()
         self.write = self.buffer.write if self.writable else None
 
     def readline(self):
-        while self.newlines == 0:
+        while self.newLines == 0:
             b = os.read(self._fd, max(os.fstat(self._fd).st_size, BUFSIZE))
-            self.newlines = b.count(b'\n') + (not b)
+            self.newLines = b.count(b'\n') + (not b)
             ptr = self.buffer.tell()
             self.buffer.seek(0, 2), self.buffer.write(b), self.buffer.seek(ptr)
-        self.newlines -= 1
+        self.newLines -= 1
         return self.buffer.readline()
 
     def flush(self):
@@ -32,33 +32,34 @@ class IOWrapper(IOBase):
     def __init__(self, file):
         self.buffer = FastIO(file)
         self.flush = self.buffer.flush
-        self.writable = self.buffer.writable
-        self.write = lambda s: self.buffer.write(s.encode('ascii'))
-        self.read = lambda: self.buffer.read().decode('ascii')
-        self.readline = lambda: self.buffer.readline().decode('ascii')
+        self.write = lambda s: self.buffer.write(s.encode("ascii"))
+        self.readline = lambda: self.buffer.readline().decode("ascii")
 
 
 sys.stdin, sys.stdout = IOWrapper(sys.stdin), IOWrapper(sys.stdout)
 def input(): return sys.stdin.readline().rstrip('\r\n')
-def print(s): return sys.stdout.write(str(s))
 
 
-n = 1  # int(input())
-have = [[3, 10]]
-toBuy = [[1, 16]]
-t = 0
-# for i in range(n):
-#     have.append(list(map(int, input().split())))
-# for i in range(n):
-#     toBuy.append(list(map(int, input().split())))
-for i, k in enumerate(have):
-    for j, m in enumerate(toBuy):
-        t = max(t, (m[1] - k[1]) / (k[0] - m[0]))
-        del have[i]
-        del toBuy[j]
-        if t <= 0:
-            print(-1)
-            break
-b = 0
-o = 0
-print(int(t))
+_int = int
+_list = list
+_map = map
+
+n = _int(input())
+have = []
+toBuy = []
+
+for i in range(n):
+    have.append(_list(_map(_int, input().split())))
+for i in range(n):
+    toBuy.append(_list(_map(_int, input().split())))
+
+
+def solve():
+    for i, k in enumerate(have):
+        for j, m in enumerate(toBuy):
+            t = (m[1] - k[1]) / (k[0] - m[0])
+            if t < 0:
+                return -1
+            m.append(t)
+        have.remove(k)
+        toBuy.pop(0)
