@@ -1,7 +1,6 @@
 import os
 import sys
 from io import BytesIO, IOBase
-from itertools import groupby
 
 BUFSIZE = 8192
 
@@ -12,6 +11,7 @@ class FastIO(IOBase):
     def __init__(self, file):
         self._fd = file.fileno()
         self.buffer = BytesIO()
+        self.writable = 'x' in file.mode or 'r' not in file.mode
         self.write = self.buffer.write if self.writable else None
 
     def readline(self):
@@ -33,6 +33,7 @@ class IOWrapper(IOBase):
     def __init__(self, file):
         self.buffer = FastIO(file)
         self.flush = self.buffer.flush
+        self.writable = self.buffer.writable
         self.write = lambda s: self.buffer.write(s.encode("ascii"))
         self.readline = lambda: self.buffer.readline().decode("ascii")
 
@@ -41,9 +42,10 @@ sys.stdin, sys.stdout = IOWrapper(sys.stdin), IOWrapper(sys.stdout)
 def input(): return sys.stdin.readline().rstrip('\r\n')
 
 
-_int = int
-n = _int(input())
-dict = {}
-for i in range(1, n + 1):
-    dict.update({i: _int(input())})
-print(dict)
+R, C = list(map(int, input().split()))
+arr = []
+for i in range(R):
+    arr.append(input().split())
+
+for r in range(R):
+    for c in range(C):

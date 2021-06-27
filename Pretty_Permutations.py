@@ -54,3 +54,30 @@ class IOWrapper(IOBase):
 
 sys.stdin, sys.stdout = IOWrapper(sys.stdin), IOWrapper(sys.stdout)
 def input(): return sys.stdin.readline().rstrip('\r\n')
+
+
+def solve(n):
+    ls = list(range(1, n + 1))
+    if n % 2 == 0:
+        i = 0
+        while i < ls.__len__() - 1:
+            t = ls[i]
+            ls[i] = ls[i + 1]
+            ls[i + 1] = t
+            i = i + 2
+    else:
+        last = ls[-1]
+        del ls[-1]
+        ls.insert(0, last)
+
+    return ' '.join(map(_str, ls))
+
+
+T = int(input())
+res = []
+for _ in range(T):
+    n = int(input())
+    res.append(solve(n))
+
+for x in res:
+    print(x)

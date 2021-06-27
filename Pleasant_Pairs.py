@@ -1,7 +1,7 @@
 import os
 import sys
 from io import BytesIO, IOBase
-
+from itertools import combinations_with_replacement
 _str = str
 str = lambda x=b'': x if type(x) is bytes else _str(x).encode()
 
@@ -54,3 +54,23 @@ class IOWrapper(IOBase):
 
 sys.stdin, sys.stdout = IOWrapper(sys.stdin), IOWrapper(sys.stdout)
 def input(): return sys.stdin.readline().rstrip('\r\n')
+
+
+def solve(n, ls):
+    count = 0
+    for i in range(3, 2*n):
+        for j in range(1, i + 1):
+            if i % j == 0 and i != j * j:
+                if ls[j-1] + ls[(i // j) - 1] == i - 1:
+                    count += 1
+
+
+T = int(input())
+res = []
+for _ in range(T):
+    n = int(input())
+    arr = list(map(int, input().split()))
+    res.append(solve(n, arr))
+
+for x in res:
+    print(x)

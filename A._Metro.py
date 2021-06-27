@@ -1,7 +1,7 @@
 import os
 import sys
 from io import BytesIO, IOBase
-from itertools import groupby
+
 
 BUFSIZE = 8192
 
@@ -12,6 +12,7 @@ class FastIO(IOBase):
     def __init__(self, file):
         self._fd = file.fileno()
         self.buffer = BytesIO()
+        self.writable = 'x' in file.mode or 'r' not in file.mode
         self.write = self.buffer.write if self.writable else None
 
     def readline(self):
@@ -33,17 +34,31 @@ class IOWrapper(IOBase):
     def __init__(self, file):
         self.buffer = FastIO(file)
         self.flush = self.buffer.flush
-        self.write = lambda s: self.buffer.write(s.encode("ascii"))
-        self.readline = lambda: self.buffer.readline().decode("ascii")
+        self.writable = self.buffer.writable
+        self.write = lambda s: self.buffer.write(s.encode('ascii'))
+        self.readline = lambda: self.buffer.readline().decode('ascii')
 
 
 sys.stdin, sys.stdout = IOWrapper(sys.stdin), IOWrapper(sys.stdout)
 def input(): return sys.stdin.readline().rstrip('\r\n')
 
 
-_int = int
-n = _int(input())
-dict = {}
-for i in range(1, n + 1):
-    dict.update({i: _int(input())})
-print(dict)
+n, s = map(int, input().split())
+track1 = list(map(int, input().split()))
+track2 = list(map(int, input().split()))
+
+
+def solve(track1, track2, n, s):
+    if track1[0] == 0:
+        return 'NO'
+    else:
+        if track1[s - 1] == 1:
+            return 'YES'
+        else:
+            for i in range(s - 1, n):
+                if track1[i] == 1 and track2[i] == 1 and track2[s - 1] == 1:
+                    return 'YES'
+    return 'NO'
+
+
+print(solve(track1, track2, n, s))
